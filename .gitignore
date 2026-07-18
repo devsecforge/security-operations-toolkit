@@ -1,0 +1,25 @@
+# Scan outputs
+reports/
+*.sarif
+*.log
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+.env.*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Secrets (never commit)
+*.pem
+*.key
+*_rsa
+credentials
+.secrets

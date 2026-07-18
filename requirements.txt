@@ -1,0 +1,5 @@
+# Python tooling used by the toolkit's SAST/utility stages.
+# Pinned loosely; Dependabot proposes upgrades weekly.
+semgrep>=1.80
+checkov>=3.2        # optional: extra IaC policy checks
+bandit>=1.7         # optional: Python-specific SAST

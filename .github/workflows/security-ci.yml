@@ -20,7 +20,7 @@ jobs:
     name: Secret Scanning (gitleaks)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - name: gitleaks
@@ -34,7 +34,7 @@ jobs:
     container:
       image: semgrep/semgrep
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Semgrep scan
         run: semgrep scan --config p/ci --config p/security-audit --sarif --output semgrep.sarif || true
       - name: Upload SARIF
@@ -48,7 +48,7 @@ jobs:
     name: SCA (Trivy, report)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Install Trivy
         run: |
           curl -sfL https://github.com/aquasecurity/trivy/releases/download/v0.72.0/trivy_0.72.0_Linux-64bit.tar.gz -o trivy.tar.gz
@@ -68,7 +68,7 @@ jobs:
     name: Lint shell scripts (ShellCheck)   # blocking gate
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: ShellCheck
         uses: ludeeus/action-shellcheck@master
         with:

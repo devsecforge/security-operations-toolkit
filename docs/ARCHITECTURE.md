@@ -16,26 +16,25 @@ a **local gate** (`run-all.sh` / `make scan`) developers run before pushing, and
 ┌───────────────┐        ┌──────────────────────────────────────────────┐
 │   GitHub PR   │ ─────▶ │             Security CI workflow             │
 └───────────────┘        │                                              │
-                         │  ① Secret scan   (gitleaks)                  │
+                         │  ① Secret scan   (gitleaks)   ── gate        │
                          │  ② SAST          (semgrep)  ──┐              │
                          │  ③ SCA (deps)    (trivy fs) ──┼─▶ SARIF ─▶ 🛡 │
-                         │  ④ IaC config    (trivy)    ──┤   upload   Security
-                         │  ⑤ CodeQL        (github)   ──┘             tab
-                         │  ⑥ ShellCheck    (lint)                      │
+                         │                               ┘   upload  Security
+                         │  ④ ShellCheck    (lint)       ── gate       tab
                          └──────────────────────────────────────────────┘
 ```
 
 ## Components
 
-| Stage | Tool | What it catches | Fails build on |
-|-------|------|-----------------|----------------|
-| Secret scanning | gitleaks | Committed keys, tokens, passwords | Any finding |
-| SAST | Semgrep | Insecure code patterns | Blocking rules |
-| SCA | Trivy (fs) | Vulnerable dependencies | HIGH/CRITICAL |
-| IaC | Trivy (config) | Terraform/K8s/Docker misconfig | HIGH/CRITICAL |
-| Container | Trivy (image) | OS/library CVEs in images | Fixable HIGH/CRITICAL |
-| Code analysis | CodeQL | Data-flow vulnerabilities | Configurable |
-| Lint | ShellCheck | Shell bugs/foot-guns | Any error |
+| Stage | Tool | What it catches | Mode |
+|-------|------|-----------------|------|
+| Secret scanning | gitleaks | Committed keys, tokens, passwords | Gate (fails on finding) |
+| SAST | Semgrep | Insecure code patterns | Report → Security tab |
+| SCA | Trivy (fs) | Vulnerable dependencies + secrets | Report → Security tab |
+| Lint | ShellCheck | Shell bugs/foot-guns | Gate (fails on error) |
+
+> The local gate (`run-all.sh`) also includes IaC (`trivy config`) and container image
+> (`trivy image`) scans; these run on demand locally rather than in the CI workflow.
 
 ## Design principles
 

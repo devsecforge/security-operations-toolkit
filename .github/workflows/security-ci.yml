@@ -50,7 +50,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Trivy filesystem scan (deps + secrets)
-        uses: aquasecurity/trivy-action@0.24.0
+        uses: aquasecurity/trivy-action@v0.28.0
         with:
           scan-type: fs
           scanners: vuln,secret
@@ -74,3 +74,4 @@ jobs:
         uses: ludeeus/action-shellcheck@master
         with:
           scandir: ./scripts
+          severity: error   # fail only on real errors, not style/info warnings

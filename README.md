@@ -30,7 +30,7 @@ every pull request and upload their results to the GitHub **Security tab**.
 - 📦 **SCA** — `trivy fs` finds known CVEs in your dependencies.
 - 🏗️ **IaC scanning** — `trivy config` catches Terraform / Kubernetes / Docker misconfigurations.
 - 🐳 **Container scanning** — `trivy image` scans built images for OS & library CVEs.
-- 🤖 **CI-native** — GitHub Actions pipeline with SARIF upload, CodeQL, ShellCheck & Dependabot.
+- 🤖 **CI-native** — GitHub Actions pipeline with SARIF upload, ShellCheck & Dependabot.
 - 🧩 **Composable** — each stage is an isolated script; add DAST/SBOM/signing without rewrites.
 
 ## 🖼️ Screenshots

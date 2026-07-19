@@ -122,7 +122,7 @@ security-operations-toolkit/
 
 ## 🧰 Technology Stack
 
-`Bash` · `GitHub Actions` · `Trivy` · `Semgrep` · `gitleaks` · `CodeQL` · `ShellCheck` · `Dependabot`
+`Bash` · `GitHub Actions` · `Trivy` · `Semgrep` · `gitleaks` · `ShellCheck` · `Dependabot`
 
 ## 🔐 Security
 

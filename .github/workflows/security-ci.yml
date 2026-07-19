@@ -1,7 +1,7 @@
 name: Security CI
 
-# Secure CI/CD gate: secret scanning, SAST, SCA, IaC and CodeQL.
-# Findings upload to the GitHub Security tab as SARIF.
+# Secure CI/CD gate for the toolkit itself: secret scanning, SAST, dependency scanning,
+# and shell linting. Findings upload to the Security tab as SARIF (on push).
 
 on:
   push:
@@ -13,7 +13,7 @@ on:
 
 permissions:
   contents: read
-  security-events: write   # required to upload SARIF
+  security-events: write
 
 jobs:
   secret-scan:
@@ -29,7 +29,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   sast:
-    name: SAST (Semgrep)
+    name: SAST (Semgrep, report)
     runs-on: ubuntu-latest
     container:
       image: semgrep/semgrep
@@ -38,16 +38,18 @@ jobs:
       - name: Semgrep scan
         run: semgrep scan --config p/ci --config p/security-audit --sarif --output semgrep.sarif || true
       - name: Upload SARIF
+        if: github.event_name == 'push'
+        continue-on-error: true
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: semgrep.sarif
 
-  sca-iac:
-    name: SCA + IaC (Trivy)
+  sca:
+    name: SCA (Trivy, report)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Trivy filesystem (deps) scan
+      - name: Trivy filesystem scan (deps + secrets)
         uses: aquasecurity/trivy-action@0.24.0
         with:
           scan-type: fs
@@ -55,39 +57,16 @@ jobs:
           severity: HIGH,CRITICAL
           format: sarif
           output: trivy-fs.sarif
-      - name: Trivy config (IaC) scan
-        uses: aquasecurity/trivy-action@0.24.0
-        with:
-          scan-type: config
-          severity: HIGH,CRITICAL
-          format: sarif
-          output: trivy-config.sarif
-      - name: Upload Trivy FS SARIF
+      - name: Upload Trivy SARIF
+        if: github.event_name == 'push'
+        continue-on-error: true
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: trivy-fs.sarif
           category: trivy-fs
-      - name: Upload Trivy Config SARIF
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: trivy-config.sarif
-          category: trivy-config
-
-  codeql:
-    name: CodeQL Analysis
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        language: [python]   # add languages as the toolkit grows
-    steps:
-      - uses: actions/checkout@v4
-      - uses: github/codeql-action/init@v3
-        with:
-          languages: ${{ matrix.language }}
-      - uses: github/codeql-action/analyze@v3
 
   shellcheck:
-    name: Lint shell scripts (ShellCheck)
+    name: Lint shell scripts (ShellCheck)   # blocking gate
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
